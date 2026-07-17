@@ -10,9 +10,17 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { Server as IOServer } from "socket.io";
-import type { ReplaySpeed } from "@wc/shared-types";
+import { FIXTURES, type ReplaySpeed } from "@wc/shared-types";
 import { SimulationEngine } from "./orchestrator/simulationEngine.js";
 import { MockChainGateway } from "./chain/mockChain.js";
+import { startTelegramBot } from "./bot/telegramBot.js";
+
+// Best-effort load of .env.local (Node >= 20.12). Silent if absent.
+try {
+  (process as unknown as { loadEnvFile?: (p: string) => void }).loadEnvFile?.(".env.local");
+} catch {
+  /* no .env.local — rely on the ambient environment */
+}
 
 const PORT = Number(process.env.PORT ?? 4000);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -152,6 +160,26 @@ async function main(): Promise<void> {
 
   await app.listen({ port: PORT, host: HOST });
   app.log.info(`WC betting API on http://${HOST}:${PORT} (mock chain, ttl ${TTL_SECONDS}s)`);
+
+  // Optional Telegram bot (Phase 4) — only if a token is configured.
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (token) {
+    try {
+      const handle = await startTelegramBot(engine, {
+        token,
+        webOrigin: WEB_ORIGIN,
+        fixtureLabel: (id) => {
+          const f = FIXTURES[id];
+          return f ? `${f.homeTeam} v ${f.awayTeam}` : id;
+        },
+      });
+      app.log.info(`Telegram bot @${handle.username} started (long polling)`);
+    } catch (err) {
+      app.log.warn(`Telegram bot disabled: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  } else {
+    app.log.info("Telegram bot disabled (no TELEGRAM_BOT_TOKEN)");
+  }
 }
 
 // Run only when executed directly (not when imported by tests).
