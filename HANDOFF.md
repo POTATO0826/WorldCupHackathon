@@ -14,7 +14,8 @@ requires Solana). Two phases are done and verified; three remain.
 | 1 — TxLINE replay engine (chain-agnostic) | ✅ done, verified | `apps/replay-engine`, `packages/shared-types` |
 | 2 — Anchor betting program + SPL WCDT | ✅ done, verified | `anchor/` |
 | 3a — Rule-based agent (`PressureEdgeV1`) + state machine | ✅ done, verified | `packages/agent-core`, `packages/shared-types` |
-| 3b — API + oracle + web confirm (on-chain bet flow) | ⏳ next | (new) `apps/api`, `apps/web` |
+| 3b — API + orchestrator + mock-chain oracle | ✅ done, verified | `apps/api` |
+| 3c — Real Solana chain gateway + web confirm/wallet | ⏳ next | `apps/api` (SolanaChainGateway), `apps/web` |
 | 4 — Telegram bot (briefing/recommend/confirm/settle) | ⏳ | `apps/api` bot |
 | 5 — Portfolio + polish + tests | ⏳ | `apps/web` |
 
@@ -88,8 +89,21 @@ defaulting to that path. Fixtures: 18209181 (FRA-MAR 2-0), 18213979 (1-2 ET), 18
    `@wc/shared-types`. 42 vitest tests (unit + full replay-driven invariant run) green; `tsc`
    and `replay:verify` green. Entry: `import { pressureEdgeV1, DEFAULT_PREFERENCES } from "@wc/agent-core"`.
    Telegram bot token (Phase 4) stored in gitignored `.env.local` (`TELEGRAM_BOT_TOKEN`); see `.env.example`.
-2. **API + oracle** (`apps/api`): Fastify + Socket.IO; drive replay → agent → recommendation state machine (spec §28); a **Solana oracle keypair** submits `resolve_market` on terminal state; `place_bet`/`claim` via the connected wallet.
-3. **Web** (`apps/web`): Next.js + `@solana/wallet-adapter` (Phantom) — connect, faucet, match centre, `/confirm/[id]` signing, portfolio.
-4. **Telegram** (Phase 4) and **portfolio/polish/tests** (Phase 5) follow.
+2. ✅ **API + orchestrator + oracle** (`apps/api`) — DONE (commit `3e371b0`). Fastify + Socket.IO.
+   `SimulationEngine` drives replay → `pressureEdgeV1` → recommendation FSM (§28) → confirm →
+   `place_bet` → terminal state → oracle `resolve_market` → settle WON/LOST → `claim`. All chain
+   effects go through a `ChainGateway` seam; default `MockChainGateway` runs with **no validator**
+   (mirrors the program: one market/fixture, one bet/market/bettor, oracle-gated resolve, fixed-odds
+   payout). In-memory single-wallet portfolio. REST: `/api/fixtures`, `/api/fixtures/:id/replay`
+   (start/pause/resume/setSpeed/**step**), `/api/recommendations/:id/{confirm,reject,stake,claim}`,
+   `/api/preferences`, `/api/faucet`, `/api/portfolio`; Socket.IO streams `state|recommendation|bet|
+   settlement|portfolio`. Run: `PORT=4000 npx tsx apps/api/src/server.ts`. Verified end-to-end over
+   HTTP (step→confirm→settle→claim). 52 vitest tests total; `tsc` green.
+3. **Real Solana gateway** (`apps/api`): implement `SolanaChainGateway implements ChainGateway`
+   using `@coral-xyz/anchor` — derive PDAs, oracle keypair signs `resolve_market`, connected wallet
+   signs `place_bet`/`claim`. Swap it in `server.ts` behind `SOLANA_CLUSTER`/`PROGRAM_ID` env.
+4. **Web** (`apps/web`): Next.js + `@solana/wallet-adapter` (Phantom) — connect, faucet, match centre
+   (subscribe to the Socket.IO stream), `/confirm/[id]` signing, portfolio.
+5. **Telegram** (Phase 4, token already in `.env.local`) and **portfolio/polish/tests** (Phase 5) follow.
 
 Gate each phase through no-mistakes.
