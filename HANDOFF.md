@@ -13,7 +13,8 @@ requires Solana). Two phases are done and verified; three remain.
 |---|---|---|
 | 1 — TxLINE replay engine (chain-agnostic) | ✅ done, verified | `apps/replay-engine`, `packages/shared-types` |
 | 2 — Anchor betting program + SPL WCDT | ✅ done, verified | `anchor/` |
-| 3 — Rule-based agent + on-chain bet flow | ⏳ next | (new) `packages/agent-core`, `apps/api` |
+| 3a — Rule-based agent (`PressureEdgeV1`) + state machine | ✅ done, verified | `packages/agent-core`, `packages/shared-types` |
+| 3b — API + oracle + web confirm (on-chain bet flow) | ⏳ next | (new) `apps/api`, `apps/web` |
 | 4 — Telegram bot (briefing/recommend/confirm/settle) | ⏳ | `apps/api` bot |
 | 5 — Portfolio + polish + tests | ⏳ | `apps/web` |
 
@@ -79,7 +80,14 @@ defaulting to that path. Fixtures: 18209181 (FRA-MAR 2-0), 18213979 (1-2 ET), 18
 
 ## Next steps (Phase 3)
 
-1. **Agent core** (`packages/agent-core`): port spec §11 `PressureEdgeV1` — rule-based Home/Draw/Away or SKIP from `MatchState` (shots, corners, danger possessions, odds edge), with the mandatory SKIP gates (VAR active, unconfirmed goal, stale odds, market closed, daily loss, already bet). Chain-agnostic; unit-test with the replay engine.
+1. ✅ **Agent core** (`packages/agent-core`) — DONE (commit `9ebae94`). `PressureEdgeV1`
+   (spec §11.7): Poisson goal model from a Bayesian-shrunk recent-pressure share + scoreline
+   vs de-vigged market implied probs, highest positive edge wins; mandatory SKIP gates (§11.5)
+   incl. a 5' warmup; stake sizing (§11.6); recommendation state machine (§28) in shared-types.
+   Domain types (`UserPreferences`, `AgentDecision`, `AgentContext`, `Selection`) live in
+   `@wc/shared-types`. 42 vitest tests (unit + full replay-driven invariant run) green; `tsc`
+   and `replay:verify` green. Entry: `import { pressureEdgeV1, DEFAULT_PREFERENCES } from "@wc/agent-core"`.
+   Telegram bot token (Phase 4) stored in gitignored `.env.local` (`TELEGRAM_BOT_TOKEN`); see `.env.example`.
 2. **API + oracle** (`apps/api`): Fastify + Socket.IO; drive replay → agent → recommendation state machine (spec §28); a **Solana oracle keypair** submits `resolve_market` on terminal state; `place_bet`/`claim` via the connected wallet.
 3. **Web** (`apps/web`): Next.js + `@solana/wallet-adapter` (Phantom) — connect, faucet, match centre, `/confirm/[id]` signing, portfolio.
 4. **Telegram** (Phase 4) and **portfolio/polish/tests** (Phase 5) follow.
