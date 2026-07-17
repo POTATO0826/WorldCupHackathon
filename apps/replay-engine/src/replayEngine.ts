@@ -80,6 +80,29 @@ export class ReplayEngine extends EventEmitter {
     this.emit("tick", this.state, tick);
   }
 
+  /**
+   * Apply the next tick synchronously. Returns `true` if a tick was applied,
+   * `false` once the timeline is exhausted (also emits `completed` on the final
+   * step). Lets a driver advance the replay deterministically, one frame at a
+   * time, without the wall-clock timer.
+   */
+  stepOnce(): boolean {
+    if (this.cursor >= this.timeline.length) {
+      if (this.status !== "COMPLETED") {
+        this.status = "COMPLETED";
+        this.emit("completed", this.state);
+      }
+      return false;
+    }
+    this.applyTick(this.timeline[this.cursor]!);
+    this.cursor++;
+    if (this.cursor >= this.timeline.length) {
+      this.status = "COMPLETED";
+      this.emit("completed", this.state);
+    }
+    return true;
+  }
+
   /** Apply every remaining tick synchronously and return the terminal state. */
   runToEnd(): MatchState {
     while (this.cursor < this.timeline.length) {
