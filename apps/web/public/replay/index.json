@@ -1,0 +1,128 @@
+[
+  {
+    "fixtureId": "18209181",
+    "home": {
+      "id": 1999,
+      "name": "France",
+      "code": "FRA"
+    },
+    "away": {
+      "id": 2530,
+      "name": "Morocco",
+      "code": "MAR"
+    },
+    "startTime": 1783627200000,
+    "durationSec": 6376,
+    "finalScore": {
+      "home": 2,
+      "away": 0
+    },
+    "events": 267,
+    "oddsTicks": 1885
+  },
+  {
+    "fixtureId": "18213979",
+    "home": {
+      "id": 2661,
+      "name": "Argentina",
+      "code": "ARG"
+    },
+    "away": {
+      "id": 1888,
+      "name": "England",
+      "code": "ENG"
+    },
+    "startTime": 1783803600000,
+    "durationSec": 12072,
+    "finalScore": {
+      "home": 1,
+      "away": 2
+    },
+    "events": 323,
+    "oddsTicks": 3709
+  },
+  {
+    "fixtureId": "18218149",
+    "home": {
+      "id": 3021,
+      "name": "Brazil",
+      "code": "BRA"
+    },
+    "away": {
+      "id": 1575,
+      "name": "Spain",
+      "code": "ESP"
+    },
+    "startTime": 1783710000000,
+    "durationSec": 5675,
+    "finalScore": {
+      "home": 2,
+      "away": 1
+    },
+    "events": 168,
+    "oddsTicks": 1652
+  },
+  {
+    "fixtureId": "18222446",
+    "home": {
+      "id": 1489,
+      "name": "Germany",
+      "code": "GER"
+    },
+    "away": {
+      "id": 3099,
+      "name": "Portugal",
+      "code": "POR"
+    },
+    "startTime": 1783818000000,
+    "durationSec": 10714,
+    "finalScore": {
+      "home": 3,
+      "away": 1
+    },
+    "events": 363,
+    "oddsTicks": 3466
+  },
+  {
+    "fixtureId": "18237038",
+    "home": {
+      "id": 1999,
+      "name": "France",
+      "code": "FRA"
+    },
+    "away": {
+      "id": 3021,
+      "name": "Brazil",
+      "code": "BRA"
+    },
+    "startTime": 1784055600000,
+    "durationSec": 7930,
+    "finalScore": {
+      "home": 0,
+      "away": 2
+    },
+    "events": 236,
+    "oddsTicks": 3113
+  },
+  {
+    "fixtureId": "18241006",
+    "home": {
+      "id": 1888,
+      "name": "England",
+      "code": "ENG"
+    },
+    "away": {
+      "id": 1489,
+      "name": "Germany",
+      "code": "GER"
+    },
+    "startTime": 1784142000000,
+    "durationSec": 8822,
+    "finalScore": {
+      "home": 1,
+      "away": 2
+    },
+    "events": 278,
+    "oddsTicks": 3663
+  }
+]
