@@ -81,10 +81,44 @@ export class ReplayEngine {
 
   start() {
     if (!this.timeline) return;
-    if (this.status === "finished" || this.status === "idle") this.reset();
+    // only rewind when the match is over — keep mid-match seeks intact
+    if (this.status === "finished") this.reset();
     this.status = "running";
     this.lastTick = performance.now();
     this.loop();
+    this.emit();
+  }
+
+  /**
+   * Jump to a match-clock moment (seconds) so Live Desk can open mid-game.
+   * Leaves status paused — caller should start/resume afterward.
+   */
+  seekToClock(clockSec: number) {
+    if (!this.timeline || !this.state) return;
+    this.stopLoop();
+    this.reset();
+
+    const evs = this.timeline.events;
+    let targetT = this.timeline.durationSec * 0.42;
+    for (const ev of evs) {
+      if (ev.clock != null && ev.clock >= clockSec) {
+        targetT = ev.t;
+        break;
+      }
+    }
+
+    this.cursor = targetT;
+    while (this.evIdx < evs.length && evs[this.evIdx]!.t <= this.cursor) {
+      this.applyEvent(evs[this.evIdx]!);
+      this.evIdx++;
+    }
+    const ods = this.timeline.odds;
+    while (this.oddsIdx < ods.length && ods[this.oddsIdx]!.t <= this.cursor) {
+      this.state.odds = ods[this.oddsIdx]!;
+      this.oddsIdx++;
+    }
+
+    this.status = "paused";
     this.emit();
   }
 

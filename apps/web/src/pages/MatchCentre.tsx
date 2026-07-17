@@ -23,16 +23,12 @@ const EVENT_ICON: Record<string, string> = {
 };
 
 export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
-  const { replay, loadFixture, startReplay } = useStore();
-  const { state, timeline, status } = replay;
+  const { replay, goLive } = useStore();
+  const { state, timeline } = replay;
 
   useEffect(() => {
-    if (!timeline || timeline.fixtureId !== fixtureId) {
-      void loadFixture(fixtureId).then(() => startReplay());
-      return;
-    }
-    if (status === "idle") startReplay();
-  }, [fixtureId, timeline, loadFixture, startReplay, status]);
+    void goLive(fixtureId);
+  }, [fixtureId, goLive]);
 
   if (!timeline || timeline.fixtureId !== fixtureId || !state) {
     return (

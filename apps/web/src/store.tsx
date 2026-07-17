@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ReplayEngine, type ReplaySnapshot } from "@/lib/replay";
 import { evaluate, type AgentDecision } from "@/lib/agent";
+import { FEATURED_LIVE, seedLivePlan } from "@/lib/liveDesk";
 import type {
   AgentSkip,
   FixtureSummary,
@@ -51,6 +52,8 @@ export interface Store {
   fixtures: FixtureSummary[];
   replay: ReplaySnapshot;
   loadFixture: (id: string) => Promise<void>;
+  /** Open a fixture mid-match as a live desk board (hardcoded seek + plan). */
+  goLive: (id?: string) => Promise<void>;
   startReplay: () => void;
   pauseReplay: () => void;
   resumeReplay: () => void;
@@ -244,6 +247,50 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     await engine.load(id);
   }, []);
 
+  const goLive = useCallback(async (id?: string) => {
+    const fixtureId = id ?? FEATURED_LIVE.fixtureId;
+    settledRef.current.delete(fixtureId);
+    await engine.load(fixtureId);
+    engine.setSpeed(FEATURED_LIVE.speed);
+    // always drop into mid-match so the desk feels live, not kickoff
+    engine.seekToClock(FEATURED_LIVE.seekClock);
+    engine.start();
+
+    // featured board gets a hardcoded ready plan
+    if (fixtureId !== FEATURED_LIVE.fixtureId) return;
+    setRecommendations((prev) => {
+      const open = prev.some(
+        (r) =>
+          r.fixtureId === fixtureId &&
+          ["CREATED", "SENT", "AWAITING_CONFIRMATION", "CONFIRMED", "TRANSACTION_PENDING", "RECORDED_ON_CHAIN"].includes(
+            r.state,
+          ),
+      );
+      if (open) return prev;
+      const plan = seedLivePlan();
+      setLastDecision({
+        type: "BET",
+        selection: plan.selection,
+        confidence: plan.confidence,
+        stake: plan.stake,
+        odds: plan.odds,
+        payout: plan.payout,
+        reason: plan.reason,
+        features: {
+          minute: 42,
+          score: "1-1",
+          shots: "8/8",
+          danger: "5/6",
+          marketProb: "12.3%",
+          modelProb: "18.0%",
+          edge: "5.7%",
+          selection: "Away",
+        },
+      });
+      return [plan, ...prev];
+    });
+  }, []);
+
   const rejectRecommendation = useCallback((id: string) => {
     setRecommendations((prev) =>
       prev.map((r) =>
@@ -326,6 +373,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     fixtures,
     replay,
     loadFixture,
+    goLive,
     startReplay: () => engine.start(),
     pauseReplay: () => engine.pause(),
     resumeReplay: () => engine.resume(),

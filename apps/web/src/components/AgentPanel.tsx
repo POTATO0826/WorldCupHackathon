@@ -19,6 +19,8 @@ function ConfidenceBlocks({ value }: { value: number }) {
   );
 }
 
+const STAKE_CHIPS = [0.05, 0.1, 0.25, 0.5];
+
 function RecCard({ rec }: { rec: Recommendation }) {
   const { rejectRecommendation, changeStake } = useStore();
   return (
@@ -60,22 +62,33 @@ function RecCard({ rec }: { rec: Recommendation }) {
             <p className="mt-0.5 font-bold text-blue">{rec.payout} SOL</p>
           </div>
         </div>
+        <div className="mt-3">
+          <p className="mb-1.5 font-mono text-[10px] tracking-[0.15em] text-blue-mid uppercase">
+            Stake (SOL)
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {STAKE_CHIPS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => changeStake(rec.id, s)}
+                className={`cursor-pointer border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                  rec.stake === s
+                    ? "border-blue bg-blue text-white"
+                    : "border-blue/30 text-blue hover:bg-blue-wash"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" onClick={() => navigate(`/confirm/${rec.id}`)}>
             Confirm plan
           </Button>
           <Button size="sm" variant="outline" onClick={() => rejectRecommendation(rec.id)}>
             Reject
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              const v = window.prompt("New stake (SOL):", String(rec.stake));
-              if (v) changeStake(rec.id, Number(v) || rec.stake);
-            }}
-          >
-            Change Stake
           </Button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useStore } from "@/store";
 import { navigate } from "@/lib/router";
 
 export default function Matches() {
-  const { fixtures, loadFixture, replay, startReplay } = useStore();
+  const { fixtures } = useStore();
 
   return (
     <section className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
@@ -24,13 +24,7 @@ export default function Matches() {
             key={f.fixtureId}
             fixture={f}
             index={i}
-            onOpen={async () => {
-              if (replay.timeline?.fixtureId !== f.fixtureId) {
-                await loadFixture(f.fixtureId);
-                startReplay();
-              }
-              navigate(`/matches/${f.fixtureId}`);
-            }}
+            onOpen={() => navigate(`/matches/${f.fixtureId}`)}
           />
         ))}
       </div>
