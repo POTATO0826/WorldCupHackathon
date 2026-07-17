@@ -143,12 +143,23 @@ export class ReplayEngine extends EventEmitter {
   }
 
   setSpeed(speed: ReplaySpeed): void {
-    // Preserve current virtual position when changing speed mid-run.
+    // Preserve the current virtual position when changing speed. Both the
+    // RUNNING and PAUSED cases rebaseline the clock so already-elapsed real
+    // time is not retroactively re-scaled by the new speed on the next drain.
     if (this.status === "RUNNING") {
       const vNow = this.virtualNow();
       this.speed = speed;
       this.wallStart = Date.now();
       this.pauseOffset = this.t0 - vNow;
+    } else if (this.status === "PAUSED") {
+      // Anchor to pausedAt (the frozen instant) rather than Date.now(), so the
+      // virtual clock stays put through the pause and resume() applies the new
+      // speed only to time elapsed after resuming.
+      const vNowAtPause =
+        this.t0 + (this.pausedAt - this.wallStart) * this.speed - this.pauseOffset;
+      this.speed = speed;
+      this.wallStart = this.pausedAt;
+      this.pauseOffset = this.t0 - vNowAtPause;
     } else {
       this.speed = speed;
     }

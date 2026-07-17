@@ -165,6 +165,7 @@ pub mod betting_market {
         let now = Clock::get()?.unix_timestamp;
         let m = &mut ctx.accounts.market;
         require!(!m.closed && !m.resolved, BetError::MarketNotOpen);
+        require!(now >= m.opens_at, BetError::MarketNotYetOpen);
         require!(now <= m.closes_at, BetError::PastCloseTime);
 
         // Escrow stake: bettor -> treasury.
@@ -559,6 +560,8 @@ pub enum BetError {
     OddsTooLow,
     #[msg("market is not open")]
     MarketNotOpen,
+    #[msg("market not open yet")]
+    MarketNotYetOpen,
     #[msg("past market close time")]
     PastCloseTime,
     #[msg("market already closed")]
