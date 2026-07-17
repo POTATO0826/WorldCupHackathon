@@ -3,11 +3,11 @@ import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { navigate, useRoute } from "@/lib/router";
-import { shortAddress, fmtWcdt } from "@/lib/utils";
+import { shortAddress, fmtSol } from "@/lib/utils";
 
 const LINKS = [
   { label: "Matches", href: "/matches" },
-  { label: "Replay", href: "/replay" },
+  { label: "Live Desk", href: "/replay" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "History", href: "/history" },
   { label: "Settings", href: "/settings" },
@@ -22,12 +22,8 @@ export default function Navbar() {
       initial={{ y: -56, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-paper/90 backdrop-blur-md"
+      className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-paper/95 backdrop-blur-md"
     >
-      {/* simulation banner */}
-      <div className="border-b border-hairline bg-blue py-1 text-center font-mono text-[10px] tracking-[0.3em] text-white uppercase">
-        Simulation only — no real money · all odds and tokens are virtual
-      </div>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         <button onClick={() => navigate("/")} className="flex cursor-pointer items-center gap-2.5">
           <Logo />
@@ -57,11 +53,11 @@ export default function Navbar() {
               transition={{ duration: 2, repeat: Infinity }}
               className="h-1.5 w-1.5 bg-blue"
             />
-            Solana Devnet
+            Solana · Live
           </span>
           {address ? (
             <span className="border border-blue bg-blue-wash px-3 py-1.5 font-mono text-[11.5px] font-medium text-blue">
-              {fmtWcdt(balance)} · {shortAddress(address)}
+              {fmtSol(balance)} · {shortAddress(address)}
             </span>
           ) : (
             <Button size="sm" onClick={connectWallet} className="h-9 px-4">

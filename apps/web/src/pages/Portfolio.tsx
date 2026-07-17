@@ -4,7 +4,7 @@ import { coinPainter } from "@/lib/painters";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { navigate } from "@/lib/router";
-import { fmtWcdt } from "@/lib/utils";
+import { fmtSol } from "@/lib/utils";
 
 export default function Portfolio() {
   const { balance, recommendations, claimWinnings } = useStore();
@@ -21,27 +21,27 @@ export default function Portfolio() {
   const claimable = recommendations.filter((r) => r.state === "WON");
 
   const stats: Array<[string, string]> = [
-    ["WCDT balance", fmtWcdt(balance)],
-    ["Total staked", fmtWcdt(staked)],
-    ["Total returned", fmtWcdt(returned)],
-    ["Profit / loss", `${pnl >= 0 ? "+" : ""}${fmtWcdt(pnl)}`],
+    ["SOL balance", fmtSol(balance)],
+    ["Total staked", fmtSol(staked)],
+    ["Total returned", fmtSol(returned)],
+    ["Profit / loss", `${pnl >= 0 ? "+" : ""}${fmtSol(pnl)}`],
     ["Win rate", winRate == null ? "—" : `${winRate}%`],
     ["Active bets", String(active.length)],
   ];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-32 pb-20 sm:px-6">
+    <section className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
       <div className="flex items-end justify-between">
         <div>
           <p className="mb-2 font-mono text-[11px] tracking-[0.25em] text-blue uppercase">
             ● Virtual portfolio
           </p>
           <h1 className="font-serif text-4xl tracking-tight text-blue-ink">
-            Your <span className="italic text-blue">WCDT.</span>
+            Your <span className="italic text-blue">SOL.</span>
           </h1>
         </div>
         <div className="hidden h-24 w-24 sm:block">
-          <DitherArt painter={coinPainter("W")} pixelSize={2} timeScale={0.6} />
+          <DitherArt painter={coinPainter("◎")} pixelSize={2} timeScale={0.6} />
         </div>
       </div>
 
@@ -68,7 +68,7 @@ export default function Portfolio() {
           <div className="mt-3 flex flex-wrap gap-2">
             {claimable.map((r) => (
               <Button key={r.id} size="sm" onClick={() => claimWinnings(r.id)}>
-                Claim {r.settledPayout} WCDT — {r.matchLabel}
+                Claim {r.settledPayout} SOL — {r.matchLabel}
               </Button>
             ))}
           </div>
@@ -85,7 +85,7 @@ export default function Portfolio() {
       </div>
 
       <p className="mt-8 border border-hairline bg-blue-faint px-4 py-3 font-mono text-[11px] text-blue-mid">
-        All figures are simulated. WCDT has no monetary value and cannot be exchanged.
+        Live stakes in SOL on Solana. Claim winnings after the agent’s market settles.
       </p>
     </section>
   );

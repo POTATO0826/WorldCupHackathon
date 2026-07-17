@@ -23,19 +23,21 @@ const EVENT_ICON: Record<string, string> = {
 };
 
 export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
-  const { replay, loadFixture } = useStore();
-  const { state, timeline } = replay;
+  const { replay, loadFixture, startReplay } = useStore();
+  const { state, timeline, status } = replay;
 
   useEffect(() => {
     if (!timeline || timeline.fixtureId !== fixtureId) {
-      void loadFixture(fixtureId);
+      void loadFixture(fixtureId).then(() => startReplay());
+      return;
     }
-  }, [fixtureId, timeline, loadFixture]);
+    if (status === "idle") startReplay();
+  }, [fixtureId, timeline, loadFixture, startReplay, status]);
 
   if (!timeline || timeline.fixtureId !== fixtureId || !state) {
     return (
-      <section className="mx-auto max-w-6xl px-4 pt-36 text-center font-mono text-[12px] text-blue-mid">
-        Loading fixture #{fixtureId}…
+      <section className="mx-auto max-w-6xl px-4 pt-28 text-center font-mono text-[12px] text-blue-mid">
+        Connecting to live feed #{fixtureId}…
       </section>
     );
   }
@@ -43,12 +45,11 @@ export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
   const events = [...state.recent].reverse();
 
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-32 pb-20 sm:px-6">
-      {/* scoreboard */}
-      <div className="border border-hairline">
+    <section className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
+      <div className="border border-hairline bg-paper">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline bg-blue-faint px-5 py-2.5">
           <span className="font-mono text-[11px] tracking-[0.2em] text-blue uppercase">
-            Match centre · #{fixtureId} · replayed capture
+            Live match centre · #{fixtureId}
           </span>
           <span className="font-mono text-[11px] font-bold text-blue">
             {phaseLabel(state.status)} {state.varActive && "· VAR"}
@@ -72,7 +73,7 @@ export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
               {state.score.home}–{state.score.away}
             </motion.p>
             <p className="mt-1 font-mono text-[12px] text-blue-ink/60">
-              ⏱ {fmtClock(state.clock)} {state.running ? "" : "(stopped)"}
+              ⏱ {fmtClock(state.clock)} {state.running ? "LIVE" : ""}
             </p>
           </div>
           <div>
@@ -88,23 +89,22 @@ export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        {/* left column: odds + timeline */}
         <div className="flex flex-col gap-6">
-          <div className="border border-hairline p-5">
+          <div className="border border-hairline bg-paper p-5">
             <p className="mb-3 font-mono text-[11px] tracking-[0.2em] text-blue uppercase">
-              1X2 odds movement · simulated
+              Live 1X2 odds
             </p>
             <OddsSpark odds={timeline.odds} cursor={replay.cursor} />
           </div>
 
-          <div className="border border-hairline">
+          <div className="border border-hairline bg-paper">
             <p className="border-b border-hairline bg-blue-faint px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] text-blue uppercase">
-              Event timeline
+              Live event feed
             </p>
             <ul className="max-h-[340px] overflow-y-auto">
               {events.length === 0 && (
                 <li className="px-5 py-6 text-center font-mono text-[11.5px] text-blue-mid">
-                  Start the replay to stream match events.
+                  Waiting for live match events…
                 </li>
               )}
               {events.map((ev, i) => (
@@ -129,8 +129,7 @@ export default function MatchCentre({ fixtureId }: { fixtureId: string }) {
           </div>
         </div>
 
-        {/* right column: agent */}
-        <div className="border border-hairline p-5">
+        <div className="border border-hairline bg-paper p-5">
           <AgentPanel fixtureId={fixtureId} />
         </div>
       </div>

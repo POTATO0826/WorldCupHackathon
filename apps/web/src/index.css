@@ -39,7 +39,7 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background: transparent;
   color: var(--color-blue-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

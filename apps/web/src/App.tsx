@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
@@ -8,9 +9,8 @@ import Portfolio from "@/pages/Portfolio";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
 import Replay from "@/pages/Replay";
-import { useState } from "react";
-import Loader from "@/components/Loader";
 import GoalIntro from "@/components/GoalIntro";
+import ChromaticWaves from "@/components/originkit/ChromaticWaves";
 import { useRoute } from "@/lib/router";
 import { StoreProvider } from "@/store";
 
@@ -29,21 +29,34 @@ function Router() {
   return <Home />;
 }
 
-type Stage = "loader" | "goal" | "ready";
-
 export default function App() {
   const { parts } = useRoute();
-  const [stage, setStage] = useState<Stage>("loader");
-
   const isHome = parts.length === 0;
+  // Skip the kick intro when deep-linking into another page
+  const [introDone, setIntroDone] = useState(!isHome);
+  const showIntro = isHome && !introDone;
 
   return (
     <StoreProvider>
-      {stage === "loader" && (
-        <Loader onDone={() => setStage(isHome ? "goal" : "ready")} />
-      )}
-      {stage === "goal" && <GoalIntro onDone={() => setStage("ready")} />}
-      <main className="relative flex min-h-screen flex-col">
+      {/* Soft waves stay behind content — never bleed through solid panels */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-45">
+        <ChromaticWaves
+          frequency={1.8}
+          speed={1.6}
+          bgColor="#fdfdfe"
+          cellSize={52}
+          gamma={11}
+          paletteBias={-6}
+        />
+      </div>
+
+      {showIntro && <GoalIntro onDone={() => setIntroDone(true)} />}
+
+      {/* Hide the app chrome while the kick intro owns the screen */}
+      <main
+        className={`relative z-10 flex min-h-screen flex-col ${showIntro ? "invisible" : ""}`}
+        aria-hidden={showIntro}
+      >
         <Navbar />
         <div className="flex-1">
           <Router />

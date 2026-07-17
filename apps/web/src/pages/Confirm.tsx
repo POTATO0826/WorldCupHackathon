@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { navigate } from "@/lib/router";
-import { fmtWcdt } from "@/lib/utils";
+import { fmtSol } from "@/lib/utils";
 
 /** Final confirmation screen — mirrors the SafeSend "override warning" modal:
  * type-to-confirm, then MetaMask signature. */
@@ -33,7 +33,7 @@ export default function Confirm({ recId }: { recId: string }) {
   const canSign = typed.trim().toUpperCase() === "BET" && !busy && !pending;
 
   return (
-    <section className="mx-auto max-w-xl px-4 pt-32 pb-20">
+    <section className="mx-auto max-w-xl px-4 pt-24 pb-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,17 +41,17 @@ export default function Confirm({ recId }: { recId: string }) {
       >
         <div className="border-b border-hairline bg-blue-faint px-6 py-3">
           <span className="font-mono text-[11px] tracking-[0.25em] text-blue uppercase">
-            Final confirmation · simulated bet
+            Confirm live bet plan
           </span>
         </div>
 
         <div className="p-6">
           <h1 className="font-serif text-[26px] leading-snug text-blue-ink">
-            You are placing a <span className="italic text-blue">virtual</span> bet.
+            Confirm the agent's <span className="italic text-blue">live plan.</span>
           </h1>
           <p className="mt-2 text-[13px] leading-relaxed text-blue-ink/70">
-            WCDT has no monetary value. This MetaMask signature records a simulated bet on
-            Solana devnet. The agent can be wrong — it does not guarantee profit.
+            Sign with MetaMask to stake SOL on Solana. The agent watches the match — you decide
+            whether this plan goes through.
           </p>
 
           <div className="mt-5 border border-hairline">
@@ -59,11 +59,11 @@ export default function Confirm({ recId }: { recId: string }) {
               ["Match", rec.matchLabel],
               ["Market", "1X2 — Match Result"],
               ["Selection", `${rec.selection}${rec.selection !== "Draw" ? " Win" : ""}`],
-              ["Stake", `${rec.stake} WCDT`],
+              ["Stake", `${rec.stake} SOL`],
               ["Odds", rec.odds.toFixed(2)],
-              ["Potential payout", `${rec.payout} WCDT`],
-              ["Current balance", fmtWcdt(balance)],
-              ["Remaining daily risk", fmtWcdt(remainingRisk)],
+              ["Potential payout", `${rec.payout} SOL`],
+              ["Current balance", fmtSol(balance)],
+              ["Remaining daily risk", fmtSol(remainingRisk)],
             ].map(([k, v]) => (
               <div
                 key={k}
@@ -131,7 +131,7 @@ export default function Confirm({ recId }: { recId: string }) {
               </div>
               {rec.stake > balance && (
                 <p className="mt-2 text-center font-mono text-[11px] text-blue-deep">
-                  Insufficient WCDT balance for this stake.
+                  Insufficient SOL balance for this stake.
                 </p>
               )}
             </>

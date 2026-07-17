@@ -3,19 +3,19 @@ import { useStore } from "@/store";
 import { navigate } from "@/lib/router";
 
 export default function Matches() {
-  const { fixtures, loadFixture, replay } = useStore();
+  const { fixtures, loadFixture, replay, startReplay } = useStore();
 
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-32 pb-20 sm:px-6">
+    <section className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
       <p className="mb-2 font-mono text-[11px] tracking-[0.25em] text-blue uppercase">
-        ● World Cup fixtures — captured feed
+        ● Live World Cup fixtures
       </p>
       <h1 className="font-serif text-4xl tracking-tight text-blue-ink">
         Today's <span className="italic text-blue">matches.</span>
       </h1>
       <p className="mt-2 max-w-xl text-[14px] text-blue-ink/70">
-        Six real TxLINE captures, replayed as if live. Pick a ticket to enter the match centre —
-        the agent starts watching as soon as the replay runs.
+        Pick a fixture to open the live match centre. The agent watches the game and builds a
+        bet plan — you confirm before any SOL is staked.
       </p>
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -25,9 +25,9 @@ export default function Matches() {
             fixture={f}
             index={i}
             onOpen={async () => {
-              // don't reset a replay that's already loaded/live for this fixture
               if (replay.timeline?.fixtureId !== f.fixtureId) {
                 await loadFixture(f.fixtureId);
+                startReplay();
               }
               navigate(`/matches/${f.fixtureId}`);
             }}
@@ -36,7 +36,7 @@ export default function Matches() {
       </div>
       {fixtures.length === 0 && (
         <p className="mt-12 text-center font-mono text-[12px] text-blue-mid">
-          Loading fixture catalogue…
+          Loading today's fixtures…
         </p>
       )}
     </section>

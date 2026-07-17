@@ -43,7 +43,7 @@ export function evaluate(
 
   if (state.varActive) return skip("VAR review in progress — waiting for the decision.");
   if (state.unconfirmedGoal) return skip("A goal is awaiting confirmation.");
-  if (!state.odds) return skip("Simulated odds unavailable for this market.");
+  if (!state.odds) return skip("Live odds unavailable for this market.");
   if (state.finished || (state.status ?? 0) >= 5) return skip("Market closed — match is over.");
   if (dailyLoss >= prefs.maxDailyLoss) return skip("Daily virtual loss limit reached.");
 
@@ -117,8 +117,11 @@ export function evaluate(
   }
 
   const rawStake = prefs.maxStake * (confidence / 100) * MODE_FACTOR[prefs.mode];
-  const stake = Math.max(1, Math.round(Math.min(rawStake, prefs.maxStake, balance * 0.1)));
-  const payout = Math.round(stake * best.odds * 10) / 10;
+  const stake = Math.max(
+    0.05,
+    Math.round(Math.min(rawStake, prefs.maxStake, balance * 0.1) * 100) / 100,
+  );
+  const payout = Math.round(stake * best.odds * 100) / 100;
 
   const sideName =
     best.sel === "Home" ? timeline.home.name : best.sel === "Away" ? timeline.away.name : "the draw";
@@ -137,7 +140,7 @@ export function evaluate(
     odds: best.odds,
     payout,
     reason:
-      `Backing ${sideName}: model probability ${(best.model * 100).toFixed(0)}% vs simulated market ` +
+      `Plan: back ${sideName}. Model ${(best.model * 100).toFixed(0)}% vs live market ` +
       `${(best.market * 100).toFixed(0)}% (+${(best.edge * 100).toFixed(1)}% edge). ` +
       `At ${Math.round(minute)}' the score is ${state.score.home}-${state.score.away} and ${pressureNote}.`,
     features,

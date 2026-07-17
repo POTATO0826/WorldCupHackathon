@@ -4,7 +4,7 @@ import { footballPainter } from "@/lib/painters";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { navigate } from "@/lib/router";
-import { fmtWcdt, shortAddress } from "@/lib/utils";
+import { fmtSol, shortAddress } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -74,13 +74,12 @@ export default function Home() {
     linkTelegram,
   } = useStore();
 
-  const line1 = ["Bet", "on", "replays,"];
+  const line1 = ["Watch", "live,",];
   const ready = !!address && faucetClaimed && telegramLinked;
 
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-32 sm:px-6 lg:pt-36">
-      <div className="grid gap-10 border border-hairline lg:grid-cols-[1.05fr_1fr]">
-        {/* left: headline + dithered world cup ball */}
+    <section className="mx-auto max-w-6xl px-4 pt-24 sm:px-6 lg:pt-28">
+      <div className="grid gap-10 border border-hairline bg-paper lg:grid-cols-[1.05fr_1fr]">
         <div className="relative flex flex-col justify-start overflow-hidden border-b border-hairline p-6 sm:p-10 lg:border-r lg:border-b-0">
           <div className="relative z-10">
             <motion.p
@@ -89,7 +88,7 @@ export default function Home() {
               transition={{ delay: 0.15, duration: 0.6 }}
               className="mb-5 font-mono text-[11px] tracking-[0.25em] text-blue uppercase"
             >
-              ● Simulated World Cup betting agent
+              ● Live World Cup betting agent
             </motion.p>
             <h1 className="font-serif text-[clamp(2.6rem,5.6vw,4.4rem)] leading-[1.04] tracking-tight text-blue-ink">
               {line1.map((w, i) => (
@@ -105,7 +104,7 @@ export default function Home() {
                   transition={{ duration: 0.9, delay: 0.55, ease: EASE }}
                   className="inline-block italic text-blue"
                 >
-                  not on rent.
+                  confirm the plan.
                 </motion.span>
               </span>
             </h1>
@@ -115,9 +114,9 @@ export default function Home() {
               transition={{ delay: 0.75, duration: 0.7, ease: EASE }}
               className="mt-5 max-w-md text-[15px] leading-relaxed text-blue-ink/75"
             >
-              A rule-based agent watches replayed World Cup matches, explains its Home / Draw /
-              Away calls, and asks you before every virtual bet. Signed with MetaMask, settled
-              by a mock oracle — all in WCDT demo tokens.
+              Your agent watches the live match, builds a Home / Draw / Away plan with stake and
+              reason, then waits for you. Nothing goes on-chain until you confirm with MetaMask —
+              settled in SOL on Solana.
             </motion.p>
             <motion.p
               initial={{ opacity: 0 }}
@@ -125,11 +124,10 @@ export default function Home() {
               transition={{ delay: 1, duration: 0.7 }}
               className="mt-4 inline-block border border-hairline bg-blue-faint px-3 py-1.5 font-mono text-[11.5px] text-blue"
             >
-              The agent explains. You decide. Nothing here is real money.
+              The agent watches. You confirm every bet.
             </motion.p>
           </div>
 
-          {/* dithered football */}
           <motion.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -140,12 +138,11 @@ export default function Home() {
               <DitherArt painter={footballPainter} pixelSize={3} timeScale={0.8} />
             </div>
             <p className="pointer-events-none mt-4 text-center font-mono text-[10px] tracking-[0.2em] text-blue-mid uppercase">
-              six real txline captures — replayed like live
+              live feed · agent on · confirm before stake
             </p>
           </motion.div>
         </div>
 
-        {/* right: onboarding flow */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,7 +154,7 @@ export default function Home() {
               <span className="font-mono text-[11px] tracking-[0.2em] text-blue uppercase">
                 Get match-day ready
               </span>
-              <span className="font-mono text-[11px] text-blue-mid">≡ Solana Devnet</span>
+              <span className="font-mono text-[11px] text-blue-mid">≡ Solana</span>
             </div>
 
             <Step
@@ -174,11 +171,11 @@ export default function Home() {
             />
             <Step
               n={2}
-              title="Claim 1,000 WCDT"
+              title="Claim 10 SOL"
               desc={
                 faucetClaimed
-                  ? `Balance: ${fmtWcdt(balance)} — demo tokens with no monetary value.`
-                  : "World Cup Demo Token from the faucet. Zero real value, full bragging rights."
+                  ? `Balance: ${fmtSol(balance)} — ready for live stakes.`
+                  : "Fund your agent wallet with SOL from the faucet."
               }
               done={faucetClaimed}
               action={claimFaucet}
@@ -190,8 +187,8 @@ export default function Home() {
               title="Link Telegram"
               desc={
                 telegramLinked
-                  ? "Linked — briefings and recommendations will arrive in chat."
-                  : `Send /start ${telegramCode} to the bot. Simulated instantly for this demo.`
+                  ? "Linked — live plans and results arrive in chat."
+                  : `Send /start ${telegramCode} to the bot. Instant for this demo.`
               }
               done={telegramLinked}
               action={linkTelegram}
@@ -206,22 +203,21 @@ export default function Home() {
                 disabled={!ready}
                 onClick={() => navigate("/matches")}
               >
-                {ready ? "View today's matches →" : "Complete the steps above"}
+                {ready ? "Enter live matches →" : "Complete the steps above"}
               </Button>
               <p className="mt-3 text-center font-mono text-[10.5px] leading-relaxed text-blue-mid">
-                The agent only recommends — every bet needs your explicit
+                The agent only proposes a plan — every bet needs your
                 <br />
                 confirmation and MetaMask signature.
               </p>
             </div>
           </div>
 
-          {/* mini flow explainer */}
           <div className="mt-6 grid grid-cols-3 gap-px border border-hairline bg-hairline">
             {[
-              ["01", "Replay", "TxLINE match data replayed at up to 60x"],
-              ["02", "Recommend", "Rule-based edge vs simulated odds"],
-              ["03", "Settle", "Mock oracle resolves, you claim WCDT"],
+              ["01", "Watch", "Agent reads live score, events and odds"],
+              ["02", "Plan", "Home / Draw / Away with stake + reason"],
+              ["03", "Confirm", "You sign — SOL settles after full time"],
             ].map(([n, t, d]) => (
               <div key={n} className="bg-paper p-4">
                 <p className="font-mono text-[10px] text-blue-mid">{n}</p>

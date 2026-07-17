@@ -19,7 +19,7 @@ export default function Settings() {
   };
 
   return (
-    <section className="mx-auto max-w-3xl px-4 pt-32 pb-20 sm:px-6">
+    <section className="mx-auto max-w-3xl px-4 pt-24 pb-20 sm:px-6">
       <p className="mb-2 font-mono text-[11px] tracking-[0.25em] text-blue uppercase">
         ● Agent & notification preferences
       </p>
@@ -60,7 +60,7 @@ export default function Settings() {
             </span>
           </div>
         </Row>
-        <Row label="Max stake per bet (WCDT)">
+        <Row label="Max stake per bet (SOL)">
           <input
             type="number"
             value={prefs.maxStake}
@@ -68,7 +68,7 @@ export default function Settings() {
             className="w-28 border border-hairline bg-blue-faint px-3 py-1.5 text-right font-mono text-[12px] text-blue-ink focus:border-blue focus:outline-none"
           />
         </Row>
-        <Row label="Max daily virtual loss (WCDT)">
+        <Row label="Max daily virtual loss (SOL)">
           <input
             type="number"
             value={prefs.maxDailyLoss}
@@ -101,8 +101,8 @@ export default function Settings() {
       </div>
 
       <p className="mt-6 border border-hairline bg-blue-faint px-4 py-3 font-mono text-[11px] leading-relaxed text-blue-mid">
-        Confirmation cannot be disabled in the MVP — the agent never places a bet on its own.
-        All limits apply to virtual WCDT only.
+        Confirmation stays on — the agent never stakes without your signature.
+        All limits apply to your SOL balance.
       </p>
     </section>
   );

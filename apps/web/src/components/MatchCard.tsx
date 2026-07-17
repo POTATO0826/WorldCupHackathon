@@ -44,7 +44,7 @@ export default function MatchCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -4 }}
-      className="group relative bg-blue"
+      className="group relative isolate bg-blue"
       style={{
         clipPath:
           "polygon(0 14px, 14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px))",
@@ -85,7 +85,7 @@ export default function MatchCard({
             ) : (
               <>
                 <span>#{fixture.fixtureId}</span>
-                <span>{Math.round(fixture.durationSec / 60)} MIN FEED</span>
+                <span>KICK-OFF READY</span>
               </>
             )}
           </div>
@@ -100,7 +100,7 @@ export default function MatchCard({
             <span className="italic text-blue">{fixture.away.name}</span>
           </h3>
           <p className="mt-1.5 min-h-[34px] text-[11.5px] leading-relaxed text-blue-ink/65">
-            {DESCRIPTIONS[fixture.fixtureId] ?? "A World Cup capture, replayed like live."}
+            {DESCRIPTIONS[fixture.fixtureId] ?? "Live World Cup fixture — agent watching."}
           </p>
 
           {/* perforation */}

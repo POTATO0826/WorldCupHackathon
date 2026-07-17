@@ -295,12 +295,12 @@ export default function GoalIntro({ onDone }: { onDone: () => void }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: EASE }}
           onClick={skip}
-          className="fixed inset-0 z-[90] flex cursor-pointer flex-col items-center justify-center bg-paper"
+          className="fixed inset-0 z-[100] flex cursor-pointer flex-col items-center justify-center bg-paper"
         >
-          <div className="h-[62vh] w-full max-w-5xl px-4">
+          <div className="h-[58vh] w-full max-w-4xl px-6">
             <DitherArt painter={painterRef.current} pixelSize={3} timeScale={1} />
           </div>
-          <p className="mt-2 font-mono text-[10px] tracking-[0.3em] text-blue-mid uppercase">
+          <p className="mt-4 font-mono text-[10px] tracking-[0.3em] text-blue-mid uppercase">
             click to skip
           </p>
         </motion.div>

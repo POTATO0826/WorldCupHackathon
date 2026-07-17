@@ -6,7 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function shortAddress(addr: string) {
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  if (addr.length <= 12) return addr;
+  return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
 }
 
 export function fmtClock(seconds: number | null): string {
@@ -16,13 +17,21 @@ export function fmtClock(seconds: number | null): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export function fmtWcdt(n: number): string {
-  return `${n.toLocaleString(undefined, { maximumFractionDigits: 1 })} WCDT`;
+export function fmtSol(n: number): string {
+  return `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} SOL`;
 }
 
+/** Fake Solana-style base58 signature for the demo ledger. */
 export function fakeTxHash(): string {
-  const hex = "0123456789abcdef";
-  let out = "0x";
-  for (let i = 0; i < 64; i++) out += hex[Math.floor(Math.random() * 16)];
+  const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let out = "";
+  for (let i = 0; i < 88; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  return out;
+}
+
+export function fakeSolAddress(): string {
+  const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let out = "";
+  for (let i = 0; i < 44; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
   return out;
 }

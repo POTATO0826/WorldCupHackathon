@@ -18,9 +18,9 @@ import type {
   ReplaySpeed,
   Selection,
 } from "@/lib/types";
-import { fakeTxHash } from "@/lib/utils";
+import { fakeSolAddress, fakeTxHash } from "@/lib/utils";
 
-const FAUCET_AMOUNT = 1000;
+const FAUCET_AMOUNT = 10;
 const AGENT_INTERVAL_MS = 4000;
 
 interface EthProvider {
@@ -87,8 +87,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
   const [prefs, setPrefsState] = useState<Preferences>({
     minConfidence: 65,
-    maxStake: 50,
-    maxDailyLoss: 200,
+    maxStake: 1,
+    maxDailyLoss: 5,
     mode: "balanced",
     telegramEnabled: true,
     favouriteTeams: [],
@@ -223,11 +223,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         // fall through to simulated wallet
       }
     }
-    // simulated wallet for demo environments without MetaMask
-    const hex = "0123456789abcdef";
-    let a = "0x";
-    for (let i = 0; i < 40; i++) a += hex[Math.floor(Math.random() * 16)];
-    setAddress(a);
+    // simulated Solana wallet when MetaMask / Solana provider is unavailable
+    setAddress(fakeSolAddress());
   }, []);
 
   const claimFaucet = useCallback(() => {
@@ -259,8 +256,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setRecommendations((prev) =>
       prev.map((r) => {
         if (r.id !== id || r.state !== "AWAITING_CONFIRMATION") return r;
-        const capped = Math.max(1, Math.min(stake, prefsRef.current.maxStake, balanceRef.current));
-        return { ...r, stake: capped, payout: Math.round(capped * r.odds * 10) / 10 };
+        const capped =
+          Math.round(
+            Math.max(0.05, Math.min(stake, prefsRef.current.maxStake, balanceRef.current)) * 100,
+          ) / 100;
+        return { ...r, stake: capped, payout: Math.round(capped * r.odds * 100) / 100 };
       }),
     );
   }, []);
@@ -280,7 +280,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         await window.ethereum.request({
           method: "personal_sign",
           params: [
-            `SIMULATED BET — NO REAL VALUE\nMatch: ${rec.matchLabel}\nSelection: ${rec.selection}\nStake: ${rec.stake} WCDT\nOdds: ${rec.odds}\nRecommendation: ${rec.id}`,
+            `LIVE BET PLAN\nMatch: ${rec.matchLabel}\nSelection: ${rec.selection}\nStake: ${rec.stake} SOL\nOdds: ${rec.odds}\nPlan: ${rec.id}`,
             address,
           ],
         });

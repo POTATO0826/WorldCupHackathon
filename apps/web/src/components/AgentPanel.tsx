@@ -29,7 +29,7 @@ function RecCard({ rec }: { rec: Recommendation }) {
     >
       <div className="flex items-center justify-between border-b border-hairline bg-blue-faint px-4 py-2">
         <span className="font-mono text-[10.5px] tracking-[0.2em] text-blue uppercase">
-          Recommendation · simulated
+          Live bet plan
         </span>
         <span className="font-mono text-[10.5px] text-blue-mid">#{rec.id}</span>
       </div>
@@ -49,7 +49,7 @@ function RecCard({ rec }: { rec: Recommendation }) {
         <div className="mt-3 grid grid-cols-3 gap-px border border-hairline bg-hairline font-mono text-[11px]">
           <div className="bg-paper p-2">
             <p className="text-blue-mid">STAKE</p>
-            <p className="mt-0.5 font-bold text-blue-ink">{rec.stake} WCDT</p>
+            <p className="mt-0.5 font-bold text-blue-ink">{rec.stake} SOL</p>
           </div>
           <div className="bg-paper p-2">
             <p className="text-blue-mid">ODDS</p>
@@ -57,12 +57,12 @@ function RecCard({ rec }: { rec: Recommendation }) {
           </div>
           <div className="bg-paper p-2">
             <p className="text-blue-mid">PAYOUT</p>
-            <p className="mt-0.5 font-bold text-blue">{rec.payout} WCDT</p>
+            <p className="mt-0.5 font-bold text-blue">{rec.payout} SOL</p>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" onClick={() => navigate(`/confirm/${rec.id}`)}>
-            Confirm Bet
+            Confirm plan
           </Button>
           <Button size="sm" variant="outline" onClick={() => rejectRecommendation(rec.id)}>
             Reject
@@ -71,7 +71,7 @@ function RecCard({ rec }: { rec: Recommendation }) {
             size="sm"
             variant="ghost"
             onClick={() => {
-              const v = window.prompt("New stake (WCDT):", String(rec.stake));
+              const v = window.prompt("New stake (SOL):", String(rec.stake));
               if (v) changeStake(rec.id, Number(v) || rec.stake);
             }}
           >
@@ -111,15 +111,16 @@ export default function AgentPanel({ fixtureId }: { fixtureId: string }) {
         <RecCard rec={open} />
       ) : lastDecision?.type === "BET" ? (
         <p className="border border-hairline bg-blue-faint px-4 py-3 font-mono text-[11.5px] text-blue">
-          Value found — preparing recommendation…
+          Edge found — drafting your bet plan…
         </p>
       ) : (
         <div className="border border-hairline px-4 py-3">
           <p className="font-serif text-xl text-blue-ink">
-            <span className="italic text-blue">Holding.</span> No bet right now.
+            <span className="italic text-blue">Watching.</span> No plan yet.
           </p>
           <p className="mt-1 font-mono text-[11px] leading-relaxed text-blue-ink/60">
-            {lastDecision?.skipReason ?? "The agent evaluates every few seconds while the replay runs."}
+            {lastDecision?.skipReason ??
+              "The agent reads live score, pressure and odds — then proposes a plan for you to confirm."}
           </p>
         </div>
       )}

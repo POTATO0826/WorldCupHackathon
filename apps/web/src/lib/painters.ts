@@ -144,7 +144,7 @@ export const ringsPainter: Painter = (ctx, w, h, t) => {
   ctx.fill();
 };
 
-/** Coin disc with a currency glyph — the WCDT token. */
+/** Coin disc with a currency glyph — simulated SOL. */
 export function coinPainter(glyph: string): Painter {
   return (ctx, w, h, t) => {
     const cx = w / 2;

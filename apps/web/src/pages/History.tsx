@@ -22,12 +22,12 @@ export default function History() {
   const { recommendations } = useStore();
 
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-32 pb-20 sm:px-6">
+    <section className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
       <p className="mb-2 font-mono text-[11px] tracking-[0.25em] text-blue uppercase">
-        ● Recommendation & bet history
+        ● Live plans & bet history
       </p>
       <h1 className="font-serif text-4xl tracking-tight text-blue-ink">
-        Every call, <span className="italic text-blue">on the record.</span>
+        Every plan, <span className="italic text-blue">on the record.</span>
       </h1>
 
       <div className="mt-8 border border-hairline">
@@ -40,7 +40,7 @@ export default function History() {
         </div>
         {recommendations.length === 0 && (
           <p className="px-5 py-10 text-center font-mono text-[12px] text-blue-mid">
-            No recommendations yet — run a replay and let the agent watch.
+            No bet plans yet — open a live match and let the agent watch.
           </p>
         )}
         {recommendations.map((r) => (
