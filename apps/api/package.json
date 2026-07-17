@@ -13,7 +13,10 @@
     "@wc/agent-core": "*",
     "@wc/replay-engine": "*",
     "@wc/shared-types": "*",
+    "@coral-xyz/anchor": "^0.31.1",
     "@fastify/cors": "^10.0.1",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/web3.js": "^1.98.0",
     "fastify": "^5.2.0",
     "grammy": "^1.32.0",
     "socket.io": "^4.8.1"

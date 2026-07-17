@@ -1,8 +1,7 @@
 export { SimulationEngine, type SimulationEngineOptions } from "./orchestrator/simulationEngine.js";
 export * from "./orchestrator/types.js";
-export {
-  MockChainGateway,
-} from "./chain/mockChain.js";
+export { MockChainGateway } from "./chain/mockChain.js";
+export { SolanaChainGateway, type SolanaChainGatewayOptions } from "./chain/solanaChain.js";
 export {
   oddsToBps,
   payoutWcdt,

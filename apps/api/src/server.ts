@@ -13,6 +13,8 @@ import { Server as IOServer } from "socket.io";
 import { FIXTURES, type ReplaySpeed } from "@wc/shared-types";
 import { SimulationEngine } from "./orchestrator/simulationEngine.js";
 import { MockChainGateway } from "./chain/mockChain.js";
+import { SolanaChainGateway } from "./chain/solanaChain.js";
+import type { ChainGateway } from "./chain/gateway.js";
 import { startTelegramBot } from "./bot/telegramBot.js";
 
 // Best-effort load of .env.local (Node >= 20.12). Silent if absent.
@@ -33,12 +35,12 @@ const asSpeed = (v: unknown): ReplaySpeed => {
   return (VALID_SPEEDS.has(n) ? n : 30) as ReplaySpeed;
 };
 
-export function buildServer(engine: SimulationEngine) {
+export function buildServer(engine: SimulationEngine, chainKind: "mock" | "solana" = "mock") {
   const app = Fastify({ logger: true });
 
   app.register(cors, { origin: WEB_ORIGIN, credentials: true });
 
-  app.get("/health", async () => ({ ok: true, chain: "mock" }));
+  app.get("/health", async () => ({ ok: true, chain: chainKind }));
 
   // --- fixtures / replay ---
   app.get("/api/fixtures", async () => ({ fixtures: engine.listFixtures() }));
@@ -144,9 +146,17 @@ function msg(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
+function buildChain(): { chain: ChainGateway; kind: "mock" | "solana" } {
+  if ((process.env.CHAIN ?? "mock").toLowerCase() === "solana") {
+    return { chain: SolanaChainGateway.fromEnv(), kind: "solana" };
+  }
+  return { chain: new MockChainGateway(), kind: "mock" };
+}
+
 async function main(): Promise<void> {
-  const engine = new SimulationEngine({ chain: new MockChainGateway(), ttlSeconds: TTL_SECONDS });
-  const app = buildServer(engine);
+  const { chain, kind } = buildChain();
+  const engine = new SimulationEngine({ chain, ttlSeconds: TTL_SECONDS });
+  const app = buildServer(engine, kind);
 
   const io = new IOServer(app.server, { cors: { origin: WEB_ORIGIN, credentials: true } });
   io.on("connection", (socket) => {
@@ -159,7 +169,7 @@ async function main(): Promise<void> {
   engine.onEvent((event) => io.emit(event.type, event));
 
   await app.listen({ port: PORT, host: HOST });
-  app.log.info(`WC betting API on http://${HOST}:${PORT} (mock chain, ttl ${TTL_SECONDS}s)`);
+  app.log.info(`WC betting API on http://${HOST}:${PORT} (${kind} chain, ttl ${TTL_SECONDS}s)`);
 
   // Optional Telegram bot (Phase 4) — only if a token is configured.
   const token = process.env.TELEGRAM_BOT_TOKEN;
