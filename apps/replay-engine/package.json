@@ -1,0 +1,14 @@
+{
+  "name": "@wc/replay-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "verify": "tsx src/verify.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@wc/shared-types": "*"
+  }
+}

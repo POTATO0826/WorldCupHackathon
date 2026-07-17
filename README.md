@@ -7,6 +7,11 @@
 
 > **Simulation disclaimer (read first):** This product is a **simulation-only** Web3 sports-betting agent. All tokens, odds, stakes, payouts, and settlements are virtual. There is **no real money**, **no real bookmaker**, and **no mainnet deployment** in the MVP. The agent does **not** guarantee profit.
 
+> **⛓ Chain: Solana (authoritative — see [`docs/SOLANA.md`](docs/SOLANA.md)).** This build runs on
+> **Solana** via an **Anchor program** + **SPL token**, not the EVM/Hardhat/MetaMask stack described
+> in §8 (Chain), §12, §13, §14, and Appendix B — those sections are **superseded by `docs/SOLANA.md`**.
+> All chain-agnostic sections (TxLINE replay §9–§10, agent §11, Telegram §15, database §17) remain valid.
+
 ---
 
 ## Table of contents
@@ -49,10 +54,10 @@
 - a **match replay engine** driven by real TxLINE World Cup capture data;
 - a **rule-based betting agent** that produces Home / Draw / Away recommendations;
 - **Telegram** delivery of daily briefings, recommendations, and settlement results;
-- a **Next.js + MetaMask** confirmation flow;
-- **local Hardhat** smart contracts that record simulated bets using a demo ERC-20 token (**WCDT**).
+- a **Next.js + Solana wallet-adapter (Phantom)** confirmation flow;
+- an **Anchor program on Solana** that records simulated bets using an SPL demo token (**WCDT**).
 
-Users never place a bet without explicit confirmation. Confirmed bets are signed in MetaMask and stored on a local (or optional testnet) EVM. After replay finishes, a **mock oracle** (the backend simulation wallet) resolves the market and Telegram notifies the user of win/loss and updated virtual balance.
+Users never place a bet without explicit confirmation. Confirmed bets are signed with the user's Solana wallet and stored on a local validator (or devnet). After replay finishes, a **mock oracle** (the backend oracle keypair) resolves the market and Telegram notifies the user of win/loss and updated virtual balance.
 
 ---
 
@@ -792,6 +797,9 @@ Edge threshold defaults: Conservative 8%, Balanced 5%, Aggressive 3%.
 
 ## 12. Web3 architecture
 
+> **SUPERSEDED by [`docs/SOLANA.md`](docs/SOLANA.md).** The diagram below is the original EVM
+> design, kept for reference. The live build uses Solana wallet-adapter + an Anchor program.
+
 ```mermaid
 flowchart LR
   U[User wallet] -->|faucet mint/claim| WCDT
@@ -824,6 +832,10 @@ flowchart LR
 ---
 
 ## 13. Smart-contract design
+
+> **SUPERSEDED by [`docs/SOLANA.md`](docs/SOLANA.md).** The Solidity below is the original design;
+> it was ported 1:1 to the Anchor program `betting_market` (accounts/instructions, not contracts).
+> Outcome values (0 Pending · 1 Home · 2 Draw · 3 Away) and the fixed-odds payout carry over unchanged.
 
 ### 13.1 Outcome enum
 
@@ -916,6 +928,10 @@ Losing bets remain in contract treasury (demo sink) or are burned/held — docum
 ---
 
 ## 14. Mock-oracle design
+
+> **SUPERSEDED by [`docs/SOLANA.md`](docs/SOLANA.md).** On Solana the oracle is a server-held
+> **keypair** matching `Config.oracle`; it calls `resolve_market(market_id, result)`. The score →
+> Home/Draw/Away mapping below is unchanged.
 
 The backend replay engine + API act as the mock oracle.
 

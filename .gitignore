@@ -32,3 +32,21 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Next.js
+.next
+out
+
+# Hardhat
+artifacts
+cache
+typechain-types
+
+# Lavish review artifacts
+.lavish
+
+# Rust / Anchor build output
+target
+.anchor
+test-ledger
+**/*.rs.bk
